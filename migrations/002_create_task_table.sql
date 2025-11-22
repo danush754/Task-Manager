@@ -1,3 +1,5 @@
+
+-- +goose Up
 create type status as ENUM ('completed', 'inprogress', 'hold', 'not-started');
 
 create table if not exists tbl_tasks (
@@ -12,3 +14,9 @@ updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()
 );
 
 create index idc_tasks_owner_id on tbl_tasks(owner_id);
+
+
+-- +goose Down
+DROP table if exists tbl_tasks;
+
+DROP type if exists status;
