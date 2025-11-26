@@ -5,13 +5,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(r *gin.Engine, h *handler.Handler) {
+func RegisterRoutes(r *gin.Engine, h *handler.Handler, authHandler *handler.AuthHandler) {
 
 	r.GET("/health", h.HealthCheck)
 
-	r.POST("/sign-up", h.SignUp)
+	r.POST("/sign-up", authHandler.SignUp)
 
-	r.POST("/login", h.Login)
+	r.POST("/login", authHandler.Login)
 
 	t := r.Group("/task")
 

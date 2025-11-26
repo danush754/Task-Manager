@@ -18,14 +18,6 @@ func (h *Handler) HealthCheck(c *gin.Context) {
 
 }
 
-func (h *Handler) SignUp(c *gin.Context) {
-
-}
-
-func (h *Handler) Login(c *gin.Context) {
-
-}
-
 func (h *Handler) GetTaskList(c *gin.Context) {
 
 }

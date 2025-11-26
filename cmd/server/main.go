@@ -6,9 +6,12 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/danush754/Task-Manager/internal/db"
 	handler "github.com/danush754/Task-Manager/internal/handlers"
+	"github.com/danush754/Task-Manager/internal/repository"
+	"github.com/danush754/Task-Manager/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -30,10 +33,15 @@ func main() {
 
 	queries := db.New(pool)
 
+	userRepo := repository.NewUserRepo(queries)
+
+	userService := service.NewUserService(userRepo)
+	authHandler := handler.NewAuthHandler(userService)
+
 	h := handler.NewHandler(queries)
 	//  set up the server
 	r := gin.Default()
-	RegisterRoutes(r, h)
+	RegisterRoutes(r, h, authHandler)
 
 	srvErr := make(chan error, 1)
 	go func() {
@@ -45,6 +53,10 @@ func main() {
 	select {
 	case sig := <-quitChannel:
 		log.Printf("shutting down due to %v", sig)
+		timeoutContext, cancel := context.WithTimeout(newContext, 5*time.Second)
+		defer cancel()
+		pool.Close()
+		_ = timeoutContext
 	case err := <-srvErr:
 		log.Fatalf("server error %v:", err)
 	}
